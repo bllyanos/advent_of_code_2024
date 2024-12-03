@@ -4,7 +4,7 @@ defmodule AOC.Day1 do
     |> File.read!()
     |> cleanup_input()
     |> calculate_distances()
-    |> IO.inspect(label: "result")
+    |> IO.inspect(label: "first run result")
   end
 
   def cleanup_input(content) do
