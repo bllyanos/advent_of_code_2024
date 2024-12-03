@@ -21,7 +21,7 @@ defmodule AOC.Day1 do
   end
 
   defp parse_pairs_to_integer(pairs) do
-    [[], pairs]
+    [[] | pairs]
     |> Enum.reduce(&parse_reducer/2)
   end
 
