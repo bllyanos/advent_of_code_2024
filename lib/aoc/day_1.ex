@@ -1,60 +1,27 @@
 defmodule AOC.Day1 do
+  alias AOC.Day1.Similarity
+  alias AOC.Day1.InputCleaner
+  alias AOC.Day1.Distance
+
   def run(input_path) do
-    input_path
-    |> File.read!()
-    |> cleanup_input()
-    |> calculate_distances()
-    |> IO.inspect(label: "first run result")
+    # clean input
+    pairs = get_pairs(input_path)
+
+    # first challenge
+    Distance.calculate_pairs(pairs) |> IO.inspect(label: "first result")
+
+    # second challenge
+    pairs
+    |> InputCleaner.unzip()
+    |> Similarity.get_score()
+    |> IO.inspect(label: "second result")
   end
 
-  def cleanup_input(content) do
-    content
-    |> String.split("\n")
-    |> lines_to_num_pair()
-    |> sort_pairs()
+  defp get_pairs(path) do
+    path
+    |> read_file()
+    |> InputCleaner.cleanup_input()
   end
 
-  defp lines_to_num_pair(lines) do
-    lines
-    |> Enum.map(fn line -> String.split(line, "   ") end)
-    |> parse_pairs_to_integer()
-  end
-
-  defp parse_pairs_to_integer(pairs) do
-    [[] | pairs]
-    |> Enum.reduce(&parse_reducer/2)
-  end
-
-  # return tuple of integers (left and right)
-  defp parse_reducer([left, right], acc) do
-    left_integer = String.to_integer(left)
-    right_integer = String.to_integer(right)
-    [{left_integer, right_integer} | acc]
-  end
-
-  # return acc directly if the pair is wildcard
-  defp parse_reducer(_, acc), do: acc
-
-  defp sort_pairs(pairs) do
-    [{[], []} | pairs]
-    |> Enum.reduce(&group_reducer/2)
-    |> sort_grouped_pairs()
-  end
-
-  defp group_reducer({left, right}, {left_acc, right_acc}) do
-    left_result = [left | left_acc]
-    right_result = [right | right_acc]
-    {left_result, right_result}
-  end
-
-  defp sort_grouped_pairs({left, right}) do
-    sorted_left = Enum.sort(left)
-    sorted_right = Enum.sort(right)
-
-    [sorted_left, sorted_right]
-    |> Enum.zip()
-  end
-
-  defp calculate_distances(pairs), do: Enum.map(pairs, &calculate_pair_distance/1) |> Enum.sum()
-  defp calculate_pair_distance({left, right}), do: abs(left - right)
+  defp read_file(input_path), do: File.read!(input_path)
 end
