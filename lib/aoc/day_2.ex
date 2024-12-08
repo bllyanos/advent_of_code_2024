@@ -1,12 +1,46 @@
 defmodule AOC.Day2 do
+  alias AOC.Day2.Generator
   import AOC.Common
 
   def run(input_path) do
-    input_path
-    |> load_reports()
+    reports = input_path |> load_reports()
+
+    reports
     |> Enum.map(&analyze_list/1)
     |> sum_safe_report()
     |> IO.inspect(label: "first run result, safe reports")
+
+    reports
+    |> run_dampener()
+    |> sum_safe_report()
+    |> IO.inspect(label: "second run result, safe reports")
+  end
+
+  def run_dampener(reports) do
+    Enum.map(reports, fn numbers ->
+      case analyze_list(numbers) do
+        :safe ->
+          :safe
+
+        :unsafe ->
+          count = Enum.count(numbers)
+          run_dampener_generator(numbers, count, count)
+      end
+    end)
+  end
+
+  def run_dampener_generator(_reports, _count, 0) do
+    :unsafe
+  end
+
+  def run_dampener_generator(reports, count, reverse_at) do
+    at = count - reverse_at
+    {:ok, new_reports} = Generator.drop_at(reports, at)
+
+    case analyze_list(new_reports) do
+      :safe -> :safe
+      :unsafe -> run_dampener_generator(reports, count, reverse_at - 1)
+    end
   end
 
   defp sum_safe_report(reports, num \\ 0) do
