@@ -2,8 +2,6 @@ defmodule AOC.Day3.ToggleParser do
   def parse(config, context)
 
   def parse(%{toggle: :off} = config, context) do
-    # IO.puts("off")
-
     case check_off_toggle(context) do
       {:off, new_context} -> parse(config, new_context)
       {:on, new_context} -> parse(Map.put(config, :toggle, :on), new_context)
@@ -11,16 +9,6 @@ defmodule AOC.Day3.ToggleParser do
   end
 
   def parse(%{toggle: :on} = config, context) do
-    %{graphemes: g} = context
-
-    case g do
-      ["m" | ["u" | _more]] ->
-        IO.puts("mamen")
-
-      _ ->
-        nil
-    end
-
     case check_on_toggle(context) do
       {:off, new_context} ->
         parse(Map.put(config, :toggle, :off), new_context)
@@ -51,10 +39,6 @@ defmodule AOC.Day3.ToggleParser do
   def check_off_toggle(context)
 
   def check_off_toggle(%{graphemes: ["d" | ["o" | ["(" | [")" | _more]]]]} = context) do
-    # IO.puts("toggle_on")
-
-    # write_elements(more, 15)
-
     new_context =
       empty_context_state(context)
 
